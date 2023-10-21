@@ -1,4 +1,5 @@
 import key_pair
+import base64
 
 
 def is_valid_integer(integer):
@@ -13,6 +14,23 @@ def is_existing_key(key, dict):
         if key == name:
             return True
     return False
+
+
+# sample_string = "GeeksForGeeks is the best"
+# sample_string_bytes = sample_string.encode("utf-8") 
+  
+# base64_bytes = base64.b64encode(sample_string_bytes) 
+# base64_string = base64_bytes.decode("utf-8") 
+
+# sample_int = 1234567
+# print(f"base64.b64encode(int):{base64.b64encode(sample_int)}")
+
+
+# print(f"sample string: GeeksForGeeks is the best")
+# print(f"sample string bytes: {sample_string_bytes}")
+# print(f"base64 bytes: {base64_bytes}")
+# print(f"Encoded string: {base64_string}") 
+
 
 
 print("""
@@ -157,11 +175,12 @@ please enter your desired command
 
         encrypted_message =input("    enter the encrypted message that you wish to decrypt \n(Note that it has to be encrypted with the public key corresponding with the chosen private key)\n")
 
-        if not encrypted_message.isnumeric():
-            print("Invalid Input. The encrypted message should ONLY consist of unseparated digits")
-            continue
+        # this was used to insure that it didn't contain anything that isn't an integer, now it's base 64, so it's a bit different
+        # if not encrypted_message.isalnum():
+        #     print("Invalid Input. The encrypted message should ONLY consist of unseparated digits")
+        #     continue
 
-        encrypted_message = int(encrypted_message)
+        # convert to base64 instead of int v
         decrypted_message = private_key.decrypt_message(encrypted_message)
         print(f"    original message: {decrypted_message}")
 

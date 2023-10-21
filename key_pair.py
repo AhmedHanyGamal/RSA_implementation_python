@@ -2,6 +2,7 @@ from prime_number_generator import generateLargePrime
 from extended_euclidean_algorithm import extended_euclidean_algorithm
 from supplementary_functions import fast_power
 from hashlib import sha3_512
+from base64 import b64encode, b64decode
 import random
 
 
@@ -14,7 +15,14 @@ class PublicKey:
         """
         used for privacy and sending messages in a secure way. Can only be decrypted using the corresponding private key.
         """
-        return fast_power(int(message.encode('utf-8').hex(), 16), self.e, self.N)
+        # message.encode('utf-8')
+        ciphertext_base10 = pow(int(message.encode('utf-8').hex(), 16), self.e, self.N)
+        ciphertext_bytes = ciphertext_base10.to_bytes((ciphertext_base10.bit_length() + 7) // 8, 'big')
+        ciphertext_base64 = b64encode(ciphertext_bytes).decode('utf-8')
+
+        print(f"ciphertext base10: {ciphertext_base10}")
+
+        return ciphertext_base64
 
 
     # def decrypt_message(self, encrypted_message):
@@ -63,13 +71,17 @@ class PrivateKey:
         return fast_power(int(message_digest.hexdigest(), 16), self.d, self.N)
 
     #will probably remove this
-    def decrypt_message(self, encrypted_message):
+    def decrypt_message(self, encrypted_message: str):
         """
         decrypts messages that were encrypted by the corresponding public key.
         used for privacy and sending messages in a secure way. 
         """
-        return bytes.fromhex(hex(fast_power(encrypted_message, self.d, self.N)).lstrip("0x")).decode('utf-8')
+        ciphertext_bytes = b64decode(encrypted_message.encode())
+        ciphertext_int = int.from_bytes(ciphertext_bytes, 'big')
 
+        print(f"ciphertext base10: {ciphertext_int}")
+        print(f"hex(fast_power(ciphertext_int, self.d, self.N)): {hex(fast_power(ciphertext_int, self.d, self.N))}")
+        return bytes.fromhex(hex(fast_power(ciphertext_int, self.d, self.N)).lstrip("0x")).decode('utf-8')
 
 def generate_key_pair(prime_number_bits):
     p = generateLargePrime(prime_number_bits)
