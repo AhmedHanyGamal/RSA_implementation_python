@@ -1,6 +1,5 @@
 import random
 import secrets
-from supplementary_functions import fast_power
 
 __first_few_primes = []
 
@@ -42,10 +41,10 @@ def __isMillerRabinPassed(miller_rabin_candidate):
     assert 2 ** max_divisions_by_two * even_component == miller_rabin_candidate - 1
 
     def trialComposite(round_tester):
-        if fast_power(round_tester, even_component, miller_rabin_candidate) == 1:
+        if pow(round_tester, even_component, miller_rabin_candidate) == 1:
             return False
         for i in range(max_divisions_by_two):
-            if fast_power(round_tester, 2**i * even_component, miller_rabin_candidate) == miller_rabin_candidate - 1:
+            if pow(round_tester, 2**i * even_component, miller_rabin_candidate) == miller_rabin_candidate - 1:
                 return False
         return True
     
@@ -71,12 +70,3 @@ def generateLargePrime(bit_num):
             continue
 
         return prime_candidate
-    
-
-
-
-
-# print(f"2048 bit prime number:{generateLargePrime(2048)}")
-# print(f"2048 bit prime number:{generateLargePrime(2048)}")
-# print(f"1024 bit prime number:{generateLargePrime(1024)}")
-# print(f"1024 bit prime number:{generateLargePrime(1024)}")

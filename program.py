@@ -1,36 +1,9 @@
+# RSA Implementation by Ahmed Hany
+# I didn't really put that much thought in defensive programming.
+# I didn't really put that much thought in writing clean code
+# The main purpose of this code was to implement RSA to make sure that I understood how it works/how it's made
+
 import key_pair
-import base64
-
-
-def is_valid_integer(integer):
-    if type(integer) == int:
-        return True
-    return False
-
-
-
-def is_existing_key(key, dict):
-    for name in dict.keys():
-        if key == name:
-            return True
-    return False
-
-
-# sample_string = "GeeksForGeeks is the best"
-# sample_string_bytes = sample_string.encode("utf-8") 
-  
-# base64_bytes = base64.b64encode(sample_string_bytes) 
-# base64_string = base64_bytes.decode("utf-8") 
-
-# sample_int = 1234567
-# print(f"base64.b64encode(int):{base64.b64encode(sample_int)}")
-
-
-# print(f"sample string: GeeksForGeeks is the best")
-# print(f"sample string bytes: {sample_string_bytes}")
-# print(f"base64 bytes: {base64_bytes}")
-# print(f"Encoded string: {base64_string}") 
-
 
 
 print("""
@@ -72,8 +45,7 @@ please enter your desired command
         public_key, private_key = key_pair.generate_key_pair(1024)
         key_name = input("    Enter a Name to save the keys by\n    > ")
 
-        #No defensive programming here to check if the name is dupilcated or not
-        while is_existing_key(key_name, public_key_dictionary) or is_existing_key(key_name, private_key_dictionary):
+        while (key_name in public_key_dictionary) or (key_name in private_key_dictionary):
             print("    Invalid Name, as you have used it before in either a public key, private key, or both")
             key_name = input("    please enter a valid name that you haven't used in any of your keys yet: ")
 
@@ -97,17 +69,13 @@ please enter your desired command
         public_key = 0
     elif command == '4':
         print("    Public key names:")
-        counter = 1
-        for name in public_key_dictionary.keys():
-            print(f"    {counter}. {name}")
-            counter += 1
+        for i, name in enumerate(public_key_dictionary.keys(), 1):
+            print(f"    {i}. {name}")
         
     elif command == '5':
         print("    private key names:")
-        counter = 1
-        for name in private_key_dictionary.keys():
-            print(f"    {counter}. {name}")
-            counter += 1
+        for i, name in enumerate(private_key_dictionary.keys(), 1):
+            print(f"    {i}. {name}")
 
     elif command == '6':
         print(f"    you have {len(public_key_dictionary)} key(s)")
@@ -117,7 +85,7 @@ please enter your desired command
         
         desired_key = input("    enter the name of the desired key: ")
         
-        if not is_existing_key(desired_key, public_key_dictionary):
+        if desired_key not in public_key_dictionary:
             print("Invalid key, please try again")
             continue
         
@@ -133,7 +101,7 @@ please enter your desired command
         print("\n\nWARNING\nThese are your private keys, meaning that NO ONE should have access/see your private key(s)\nTreat your private key like you treat your house keys, if not more seriously\nSo, proceed with caution")
         desired_key = input("\n\n    enter the name of the desired key: ")
         
-        if not is_existing_key(desired_key, private_key_dictionary):
+        if desired_key not in private_key_dictionary:
             print("Invalid key, please try again")
             continue
         
@@ -149,7 +117,7 @@ please enter your desired command
         
         desired_key = input("    enter the name of the desired key: ")
 
-        if not is_existing_key(desired_key, public_key_dictionary):
+        if desired_key not in public_key_dictionary:
             print("Invalid key, please try again")
             continue
 
@@ -167,20 +135,13 @@ please enter your desired command
 
         desired_key = input("    enter the name of the desired key: ")
 
-        if not is_existing_key(desired_key, private_key_dictionary):
+        if desired_key not in private_key_dictionary:
             print("Invalid key, please try again")
             continue
 
         private_key = private_key_dictionary[desired_key]
 
-        encrypted_message =input("    enter the encrypted message that you wish to decrypt \n(Note that it has to be encrypted with the public key corresponding with the chosen private key)\n")
-
-        # this was used to insure that it didn't contain anything that isn't an integer, now it's base 64, so it's a bit different
-        # if not encrypted_message.isalnum():
-        #     print("Invalid Input. The encrypted message should ONLY consist of unseparated digits")
-        #     continue
-
-        # convert to base64 instead of int v
+        encrypted_message = input("    enter the encrypted message that you wish to decrypt \n(Note that it has to be encrypted with the public key corresponding with the chosen private key)\n")
         decrypted_message = private_key.decrypt_message(encrypted_message)
         print(f"    original message: {decrypted_message}")
 
@@ -192,7 +153,7 @@ please enter your desired command
 
         desired_key = input("    enter the name of the desired key: ")
 
-        if not is_existing_key(desired_key, private_key_dictionary):
+        if desired_key not in private_key_dictionary:
             print("Invalid key, please try again")
             continue
 
@@ -211,7 +172,7 @@ please enter your desired command
         
         desired_key = input("    enter the name of the desired key: ")
 
-        if not is_existing_key(desired_key, public_key_dictionary):
+        if desired_key not in public_key_dictionary:
             print("Invalid key, please try again")
             continue
 
@@ -239,7 +200,7 @@ please enter your desired command
 
         desired_key = input("    enter the name of the desired key: ")
 
-        if not is_existing_key(desired_key, private_key_dictionary):
+        if desired_key not in private_key_dictionary:
             print("Invalid key, please try again")
             continue
 
