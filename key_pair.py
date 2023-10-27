@@ -5,19 +5,41 @@ from base64 import b64encode, b64decode
 import random
 
 
+KEY_BITS = 1024
+INPUT_MESSAGE_BLOCK_SIZE = ((KEY_BITS * 2) // 8) - 1
+BASE10_BLOCK_SIZE = 616
+BASE64_BLOCK_SIZE = 344
+
+# Was trying to figure out an equation to calculate the number of characters in the encrypted message
+# no matter the value of KEY_BITS value and the desired base
+# didn't work :(
+# I was pretty close though (I think)
+# BASE10_BLOCK_SIZE = log(pow(2, KEY_BITS * 2), 10)
+# BASE64_BLOCK_SIZE = log(pow(2, KEY_BITS * 2), 64)
+
+
+
 class PublicKey:
     def __init__(self, e: int, N: int) -> None:
         self.e = e
         self.N = N
 
-    def encrypt_message(self, message: str) -> int:
+
+    def encrypt_message(self, message: str):
         """
         used for privacy and sending messages in a secure way. Can only be decrypted using the corresponding private key.
         """
+        # we need some BLOCKS up in dis bich
+        # let's BLOCK dis shit UP
+        message_blocks = []
+        for i in range(0, len(message), INPUT_MESSAGE_BLOCK_SIZE):
+            message_blocks.append(message[i : i + INPUT_MESSAGE_BLOCK_SIZE])
 
-        ciphertext_base10 = pow(int(message.encode('utf-8').hex(), 16), self.e, self.N)
-        ciphertext_bytes = ciphertext_base10.to_bytes((ciphertext_base10.bit_length() + 7) // 8, 'big')
-        ciphertext_base64 = b64encode(ciphertext_bytes).decode('utf-8')
+        ciphertext_base64 = ""
+        for block in message_blocks:
+            encrypted_block = pow(int(block.encode('utf-8').hex(), 16), self.e, self.N)            
+            encrypted_block_bytes = encrypted_block.to_bytes((encrypted_block.bit_length() + 7) // 8, 'big')
+            ciphertext_base64 += b64encode(encrypted_block_bytes).decode('utf-8')
 
         return ciphertext_base64
     
@@ -63,10 +85,19 @@ class PrivateKey:
         decrypts messages that were encrypted by the corresponding public key.
         used for privacy and sending messages in a secure way. 
         """
-        ciphertext_bytes = b64decode(encrypted_message.encode())
-        ciphertext_int = int.from_bytes(ciphertext_bytes, 'big')
+        encrypted_message_blocks = []
 
-        return bytes.fromhex(hex(pow(ciphertext_int, self.d, self.N)).lstrip("0x")).decode('utf-8')
+        for i in range(0, len(encrypted_message), BASE64_BLOCK_SIZE):
+            encrypted_message_blocks.append(encrypted_message[i : i + BASE64_BLOCK_SIZE])
+
+
+        original_message = ""
+        for block in encrypted_message_blocks:
+            encrypted_block_bytes = b64decode(block.encode())
+            encrypted_block_int = int.from_bytes(encrypted_block_bytes, 'big')
+            original_message += bytes.fromhex(hex(pow(encrypted_block_int, self.d, self.N)).lstrip("0x")).decode('utf-8')
+
+        return original_message
 
 def generate_key_pair(prime_number_bits):
     p = generateLargePrime(prime_number_bits)
