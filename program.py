@@ -16,7 +16,38 @@ private_key_dictionary = {}
 
 mistake_counter = 0
 
+print("""
+Before we start, how do you plan on dealing with inputs?
+There are 2 methods here
+    1. using the console for input
+    2. using files for input
+What difference will it make you ask?
+if you plan on using the console/terminal to give inputs and recieve outputs, then you COULD face some SERIOUS problems depending on your OS and stuff if the message is long 
+And when I say long, I mean around 2000 characters (which isn't considered really long if I'm being honest)
+If it's less than that, then you have nothing to worry about
+If it's more than that, then you should probably use the other method
+which is files
+If you choose files, then just open the input.txt file, write the desired input, and your expected output (whether it's the encrypted message, the original message, or something else) should appear on the console
+          
+So, in conclusion
+    1. console
+    2. files""")
+IO_method = input().lower()
+valid_IO_methods = ['1', '2', 'console', 'file', 'files']
+while IO_method.lower() not in valid_IO_methods:
+    IO_method = input("""
+Invalid method, you only have the 2 options that were mentioned
+1. console
+2. files
+please enter one of them: """).lower()
+
 while(True):
+
+
+
+
+
+
     print("""
 please enter your desired command
     1. Generate Key pair
@@ -32,6 +63,7 @@ please enter your desired command
     c. Sign a message
     d. authenticate a signature
     e. make public key from private key
+    f. change the input method
     
     0. Exit program
     """)
@@ -122,11 +154,23 @@ please enter your desired command
             continue
 
         public_key = public_key_dictionary[desired_key]
-        
-        message = input("    enter the message that you want to encrypt: \n    ")
+        message = "The user gave no message somehow\nI Legit don't know how he did it"
+        if IO_method == '1' or IO_method == 'console':
+            message = input("    enter the message that you want to encrypt: \n    ")
+        else:
+            file = open('input.txt', 'r')
+            message = file.read()
 
         encrypted_message = public_key.encrypt_message(message)
-        print(f"    encrypted message: {encrypted_message}")
+
+        if IO_method == '1' or IO_method == 'consloe':
+            print(f"    encrypted message: {encrypted_message}")
+        else:
+            file = open('output.txt', 'w')
+            file.write(encrypted_message)
+            file.close()
+            print("encrypted message can be found in the output.txt file")
+
     elif command.lower() == 'b' or command.lower() == "decrypt":
         print(f"    you have {len(private_key_dictionary)} key(s)")
         print("    choose a private key to encrypt with:")
@@ -141,9 +185,22 @@ please enter your desired command
 
         private_key = private_key_dictionary[desired_key]
 
-        encrypted_message = input("    enter the encrypted message that you wish to decrypt \n(Note that it has to be encrypted with the public key corresponding with the chosen private key)\n")
+        encrypted_message = "The user gave no message somehow\nI Legit don't know how he did it"
+        if IO_method == '1' or IO_method == 'console':
+            encrypted_message = input("    enter the encrypted message that you wish to decrypt \n(Note that it has to be encrypted with the public key corresponding with the chosen private key)\n")
+        else:
+            file = open('input.txt', 'r')
+            encrypted_message = file.read()
+        
         decrypted_message = private_key.decrypt_message(encrypted_message)
-        print(f"    original message: {decrypted_message}")
+
+        if IO_method == '1' or IO_method == 'console':
+            print(f"    original message: {decrypted_message}")
+        else:
+            file = open('output.txt', 'w')
+            file.write(decrypted_message)
+            file.close()
+            print("Original message can be found in the output.txt file")
 
     elif command.lower() == 'c' or command.lower() == 'sign':
         print(f"    you have {len(private_key_dictionary)} key(s)")
@@ -159,12 +216,40 @@ please enter your desired command
 
         private_key = private_key_dictionary[desired_key]
 
-        message = input("    enter the message that you wish to sign: ")
+        message = "The user gave no message somehow\nI Legit don't know how he did it"
+        if IO_method == '1' or IO_method == 'console':
+            message = input("    enter the message that you wish to sign: ")
+        else:
+            file = open('input.txt', 'r')
+            message = file.read()
 
         signature = private_key.sign_message(message)
 
         print(f"    the signature: {signature}")
     elif command.lower() == 'd' or command.lower() == 'authenticate':
+        print("""
+before we start I just want to make something clear
+if you have a long message in the signature authentication, you should use the file input method
+So, for it to work correctly, you need to enter the original message in the input.txt file and the rest should be in the console""")
+        IO_method = input("""
+So, before you do anything, take the original message, and put it in the input.txt file (if you plan on using the file input method)
+take your time, no one is rushing you
+now choose the files option (if that's what you should do)
+choose an input method
+    1. console
+    2. files
+    
+    > """).lower()
+        while IO_method.lower() not in valid_IO_methods:
+            IO_method = input("""
+Invalid method, you only have the 2 options that were mentioned
+1. console
+2. files
+please enter one of them: """).lower()
+
+
+
+
         print(f"    you have {len(public_key_dictionary)} key(s)")
         print("    choose the public key that corresponds with the private key used to sign the message in order to authenticate the signature:")
         for name in public_key_dictionary.keys():
@@ -178,7 +263,14 @@ please enter your desired command
 
         public_key = public_key_dictionary[desired_key]
 
-        message = input("    enter the message that was signed: ")
+
+        message = "The user gave no message somehow\nI Legit don't know how he did it"
+        if IO_method == '1' or IO_method == 'console':
+            message = input("    enter the message that was signed: ")
+        else:
+            file = open('input.txt', 'r')
+            message = file.read()
+
         signature = input("    enter the signature in question: ")
 
         if not signature.isnumeric():
@@ -208,6 +300,23 @@ please enter your desired command
 
         public_key = private_key.generate_public_key()
         print(f"e = {public_key.e}\nN = {public_key.N}")
+
+
+    elif command.lower() == 'f':
+        IO_method = input("""
+choose an input method
+    1. console
+    2. files
+    
+    > """).lower()
+        while IO_method.lower() not in valid_IO_methods:
+            IO_method = input("""
+Invalid method, you only have the 2 options that were mentioned
+1. console
+2. files
+please enter one of them: """).lower()
+        print("Input method changed successfully")
+
 
     else:
         mistake_counter += 1
