@@ -3,7 +3,7 @@
 This is an implementation of the asymmetric encryption algorithm RSA.
 
 If you plan on using this implementation then you need to know how asymmetric encryption works.
-Here is a [video](https://youtu.be/p_LWJgTBIFs?si=CcijVM3yla6kqJOS) that explains it.
+Here is a [video](https://www.youtube.com/watch?v=AQDCe585Lnc&t=2s) that explains it.
 
 
 ## Prerequisites
